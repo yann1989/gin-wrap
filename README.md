@@ -43,8 +43,8 @@ func main() {
         return ginwrap.Response200(user.Name)
     })
     server := &http.Server{
-    Addr:    ":80",
-    Handler: engine,
+        Addr:    ":80",
+        Handler: engine,
     }
     go func () {
         quit := make(chan os.Signal)
