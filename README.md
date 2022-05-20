@@ -55,9 +55,9 @@ func main() {
         }
         server.Shutdown(context.Background())
     }()
-if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-    panic("启动异常: " + err.Error())
-}
+    if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+        panic("启动异常: " + err.Error())
+    }
     fmt.Println("正常退出")
 }
 
