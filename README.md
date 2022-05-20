@@ -87,7 +87,7 @@ curl --location --request GET '127.0.0.1?name=yann'
 }
 ```
 
-# 错误示例
+## 错误示例
 请求
 
 ```shell
