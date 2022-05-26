@@ -64,7 +64,7 @@ func (d DecodeType) Decode(ctx *gin.Context, dst interface{}) *DecodeErr {
 	}
 
 	if err == nil {
-		if isPrint {
+		if printReq {
 			indent, _ := json.Marshal(dst)
 			fmt.Println(ReqParams, string(indent))
 		}
