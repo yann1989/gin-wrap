@@ -23,7 +23,7 @@ type Response struct {
 var printResp bool
 
 const (
-	RespParams = "响应参数:"
+	RespParams = "响应[%s]: %s\n"
 )
 
 func (r *Response) ReturnResult(ctx *gin.Context) {
@@ -35,7 +35,7 @@ func (r *Response) ReturnResult(ctx *gin.Context) {
 	ctx.Set(CtxMsg, r.Message)
 	if printResp {
 		indent, _ := json.Marshal(r)
-		fmt.Println(RespParams, string(indent))
+		fmt.Printf(RespParams, ctx.Request.URL.Path, string(indent))
 	}
 	ctx.AbortWithStatusJSON(http.StatusOK, r)
 }

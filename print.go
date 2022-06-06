@@ -13,23 +13,19 @@ import (
 )
 
 var index uint64
-var isPrint bool
 
 func Print(c *gin.Context) {
 	current := atomic.AddUint64(&index, 1)
-	start := time.Now()
-	c.Set(CtxTime, start.UnixNano()/1e6)
+	begin := time.Now()
 	c.Next()
-	if isPrint {
-		end := time.Now()
-		var f func(string) string
-		if c.GetInt(CtxCode) == CodeSuccess {
-			f = InfoColorMsg
-		} else {
-			f = ErrorColorMsg
-		}
-		fmt.Printf("[请求%d返回] %s | %d | %v | %v | %v | %s \n", current, end.Format(TimeFormatSecond), c.Writer.Status(), end.Sub(start), f(cast.ToString(c.GetInt(CtxCode))), f(c.GetString(CtxMsg)), c.Request.URL.Path)
+	end := time.Now()
+	var f func(string) string
+	if c.GetInt(CtxCode) == CodeSuccess {
+		f = InfoColorMsg
+	} else {
+		f = ErrorColorMsg
 	}
+	fmt.Printf("[请求%d返回] %s | %d | %v | %v | %v | %s \n", current, end.Format(TimeFormatSecond), c.Writer.Status(), end.Sub(begin), f(cast.ToString(c.GetInt(CtxCode))), f(c.GetString(CtxMsg)), c.Request.URL.Path)
 }
 
 func InfoColorMsg(msg string) string {

@@ -17,7 +17,7 @@ const (
 	DecodeTypeJson  DecodeType = iota + 1 //json
 	DecodeTypeQuery                       //URL query参数
 	DecodeTypeUri                         //URL path参数
-	ReqParams       = "请求参数:"
+	ReqParams       = "请求[%s]: %s\n"
 )
 
 type DecodeErr struct {
@@ -46,31 +46,41 @@ var (
 	printReq         bool
 )
 
-func (d DecodeType) Decode(ctx *gin.Context, dst interface{}) *DecodeErr {
+func (d DecodeType) Decode(ctx *gin.Context, dst interface{}) (IBase, *DecodeErr) {
 	of := reflect.ValueOf(dst)
+	var v reflect.Value
 	if of.Kind() != reflect.Ptr {
-		return ErrNotPoint
+		v = reflect.New(of.Type())
+	} else {
+		v = reflect.New(of.Elem().Type())
 	}
 	var err error
 	switch d {
 	case DecodeTypeJson:
-		err = ctx.ShouldBindJSON(dst)
+		err = ctx.ShouldBindJSON(v.Interface())
 	case DecodeTypeQuery:
-		err = ctx.ShouldBindQuery(dst)
+		err = ctx.ShouldBindQuery(v.Interface())
 	case DecodeTypeUri:
-		err = ctx.ShouldBindUri(dst)
+		err = ctx.ShouldBindUri(v.Interface())
 	default:
-		return ErrDecodeTypeErr
+		return nil, ErrDecodeTypeErr
 	}
 
-	if err == nil {
-		if printReq {
-			indent, _ := json.Marshal(dst)
-			fmt.Println(ReqParams, string(indent))
-		}
-		return nil
+	if err != nil {
+		err = GetError(err, dst)
+		return nil, NewDecodeErr(CodeBadRequest, err)
 	}
 
-	err = GetError(err, dst)
-	return NewDecodeErr(CodeBadRequest, err)
+	if of.Kind() != reflect.Ptr {
+		v = v.Elem()
+	}
+
+	ret := v.Interface().(IBase)
+
+	if printReq {
+		indent, _ := json.Marshal(ret)
+		fmt.Printf(ReqParams, ctx.Request.URL.Path, string(indent))
+	}
+
+	return ret, nil
 }

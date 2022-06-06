@@ -4,16 +4,22 @@
 
 package ginwrap
 
-type EngineWrapOption func()
+type EngineWrapOption func(wrap *engineWrap)
 
-var (
-	EngineWrapLoggerOption EngineWrapOption = func() {
-		isPrint = true
+func EngineWrapLoggerOption() EngineWrapOption {
+	return func(wrap *engineWrap) {
+		wrap.Use(Print)
 	}
-	PrintReqParamsOption EngineWrapOption = func() {
+}
+
+func PrintReqParamsOption() EngineWrapOption {
+	return func(wrap *engineWrap) {
 		printReq = true
 	}
-	PrintRespParamsOption EngineWrapOption = func() {
+}
+
+func PrintRespParamsOption() EngineWrapOption {
+	return func(wrap *engineWrap) {
 		printResp = true
 	}
-)
+}

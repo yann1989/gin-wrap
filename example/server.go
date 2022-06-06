@@ -6,31 +6,33 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"github.com/HiData-xyz/HiData.More/HiExtern/lib/logging"
 	"github.com/gin-gonic/gin"
 	ginwrap "github.com/yann1989/gin-wrap"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 )
 
 type User struct {
-	Name string `json:"name" form:"name" uri:"name" binding:"required" err:"用户名称不能为空"`
+	Name string `json:"name" form:"name" uri:"name"`
 }
 
 func (u User) DecodeType() ginwrap.DecodeType {
 	return ginwrap.DecodeTypeQuery
 }
 
+var log = logging.Logger("LOG-TEST")
+
 func main() {
 	engine := gin.New()
-	wrap := ginwrap.NewEngineWrap(engine, ginwrap.EngineWrapLoggerOption, ginwrap.PrintReqParamsOption, ginwrap.PrintRespParamsOption)
-	wrap.GET("", &User{}, func(ctx *gin.Context, base ginwrap.IBase) *ginwrap.Response {
-		time.Sleep(time.Second)
-		var user = base.(*User)
-		return ginwrap.Response200(user.Name)
+	wrap := ginwrap.NewEngineWrap(engine, ginwrap.EngineWrapLoggerOption(), ginwrap.PrintReqParamsOption(), ginwrap.PrintRespParamsOption())
+	wrap.GET("", User{}, func(ctx *gin.Context, base ginwrap.IBase) *ginwrap.Response {
+		log.Warnw("base:", "args", base)
+		return ginwrap.Response200(errors.New("服务异常"))
 	})
 	server := &http.Server{
 		Addr:    ":80",
