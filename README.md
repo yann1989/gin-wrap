@@ -38,9 +38,9 @@ func main() {
     engine := gin.New()
     wrap := ginwrap.NewEngineWrap(engine, ginwrap.EngineWrapLoggerOption, ginwrap.PrintReqParamsOption, ginwrap.PrintRespParamsOption)
     wrap.GET("", &User{}, func (ctx *gin.Context, base ginwrap.IBase) *ginwrap.Response {
-    time.Sleep(time.Second)
-    var user = base.(*User)
-    return ginwrap.Response200(user.Name)
+        time.Sleep(time.Second)
+        var user = base.(*User)
+        return ginwrap.Response200(user.Name)
     })
     server := &http.Server{
     Addr:    ":80",
